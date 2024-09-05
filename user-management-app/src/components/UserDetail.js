@@ -3,13 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TextField, Button, Grid, Paper, Typography, CircularProgress } from '@mui/material';
 
 function UserDetail() {
-  const { id } = useParams(); // Get user ID from URL parameters
-  const navigate = useNavigate(); // For navigation
-  const [user, setUser] = useState(null); // State to store user data
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' }); // State for form data
-  const [loading, setLoading] = useState(true); // State for loading spinner
-  const [error, setError] = useState(''); // State for error messages
-  const [success, setSuccess] = useState(''); // State for success messages
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -27,7 +27,7 @@ function UserDetail() {
         console.error('Error fetching user data:', error);
         setError('Failed to fetch user data.');
       } finally {
-        setLoading(false); // Ensure loading is set to false after fetch
+        setLoading(false);
       }
     };
 
@@ -56,6 +56,9 @@ function UserDetail() {
       setSuccess('User updated successfully!');
       setError('');
       setUser(data);
+
+      // Navigate back to UserList with updated user data
+      navigate('/', { state: { updatedUser: data } });
     } catch (error) {
       console.error('Error updating user:', error);
       setError('Failed to update user. Please try again.');
@@ -164,5 +167,6 @@ function UserDetail() {
 }
 
 export default UserDetail;
+
 
 
