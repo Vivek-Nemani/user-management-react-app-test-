@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { TextField, Button, Grid, Paper, Typography } from '@mui/material';
+import React, { useState } from "react";
+import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-function CreateUserForm() {
+function CreateUserForm({ addUser }) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: "",
+    email: "",
+    phone: "",
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,43 +21,86 @@ function CreateUserForm() {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/users', {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-      });
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users",
+        {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
-      const data = await response.json();
-      console.log('User created:', data);
-      setSuccess('User created successfully!');
-      setError('');
+      const newUser = await response.json();
+      console.log("User created:", newUser);
+
+      // Pass the new user to App.js to update the state
+      addUser(newUser);
+
+      // Navigate back to home page and display a success message
+      navigate("/", {
+        state: { successMessage: "User created successfully!" },
+      });
+
+      setError("");
     } catch (error) {
-      console.error('Error creating user:', error);
-      setError('Failed to create user. Please try again.');
-      setSuccess('');
+      console.error("Error creating user:", error);
+      setError("Failed to create user. Please try again.");
+      setSuccess("");
     }
   };
 
   return (
-    <Grid container justifyContent="center" style={{ marginTop: '20px' }}>
+    <Grid
+      container
+      justifyContent="center"
+      style={{
+        marginTop: "20px",
+      }}
+    >
       <Grid item xs={12} sm={6}>
-        <Paper elevation={3} style={{ padding: '20px' }}>
-          <Typography variant="h6" gutterBottom>
+        <Paper
+          elevation={3}
+          style={{
+            padding: "20px",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "8px",
+          }}
+        >
+          <Typography
+            variant="h6"
+            gutterBottom
+            style={{
+              marginBottom: "20px",
+              fontWeight: "bold",
+            }}
+          >
             Create New User
           </Typography>
           {error && (
-            <Typography color="error" style={{ marginBottom: '10px' }}>
+            <Typography
+              color="error"
+              style={{
+                marginBottom: "10px",
+                fontWeight: "bold",
+              }}
+            >
               {error}
             </Typography>
           )}
           {success && (
-            <Typography color="primary" style={{ marginBottom: '10px' }}>
+            <Typography
+              color="primary"
+              style={{
+                marginBottom: "10px",
+                fontWeight: "bold",
+              }}
+            >
               {success}
             </Typography>
           )}
@@ -68,6 +113,9 @@ function CreateUserForm() {
               fullWidth
               margin="normal"
               required
+              style={{
+                marginBottom: "15px",
+              }}
             />
             <TextField
               label="Email"
@@ -77,6 +125,9 @@ function CreateUserForm() {
               fullWidth
               margin="normal"
               required
+              style={{
+                marginBottom: "15px",
+              }}
             />
             <TextField
               label="Phone"
@@ -86,13 +137,18 @@ function CreateUserForm() {
               fullWidth
               margin="normal"
               required
+              style={{
+                marginBottom: "20px",
+              }}
             />
             <Button
               type="submit"
               variant="contained"
               color="primary"
               fullWidth
-              style={{ marginTop: '20px' }}
+              style={{
+                marginTop: "10px",
+              }}
             >
               Submit
             </Button>
@@ -104,5 +160,4 @@ function CreateUserForm() {
 }
 
 export default CreateUserForm;
-
 

@@ -1,81 +1,116 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
+// UserList.js
+import React from "react";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Typography,
+  Paper,
+  Button,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-function UserList() {
-  const [users, setUsers] = useState([]);
-  const location = useLocation();
-  const updatedUser = location.state?.updatedUser;
+function UserList({ users, updateUser, deleteUser }) {
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then((response) => response.json())
-      .then((data) => setUsers(data));
-  }, []);
+  const handleUpdateClick = (user) => {
+    // Navigate to the edit user page
+    navigate(`/user/${user.id}`);
+  };
 
-  useEffect(() => {
-    if (updatedUser) {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === updatedUser.id ? updatedUser : user
-        )
-      );
-    }
-  }, [updatedUser]);
-
-  const handleDelete = async (id) => {
+  const handleDeleteClick = async (userId) => {
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`, {
+        method: "DELETE",
       });
 
-      if (response.ok) {
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-      } else {
-        console.error('Failed to delete user');
-      }
+      if (!response.ok) throw new Error("Failed to delete user");
+      deleteUser(userId);
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
     }
   };
 
   return (
-    <Grid container spacing={3}>
-      {users.map((user) => (
-        <Grid item xs={12} sm={6} md={4} key={user.id}>
-          <Card style={{ backgroundColor: '#f5f5f5', padding: '10px' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                {user.name}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Email: {user.email}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Phone: {user.phone}
-              </Typography>
+    <Paper
+      style={{
+        padding: "20px",
+        backgroundColor: "#f9f9f9",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <Typography
+        variant="h5"
+        gutterBottom
+        style={{
+          marginBottom: "20px",
+          fontWeight: "bold",
+        }}
+      >
+        User List
+      </Typography>
+      <List>
+        {users.map((user) => (
+          <ListItem
+            key={user.id}
+            style={{
+              marginBottom: "15px",
+              backgroundColor: "#fff",
+              borderRadius: "4px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              transition: "background-color 0.3s, box-shadow 0.3s",
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar style={{ backgroundColor: "#3f51b5" }}>
+                {user.name.charAt(0).toUpperCase()}
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={
+                <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                  {user.name}
+                </Typography>
+              }
+              secondary={
+                <Typography variant="body2" color="textSecondary">
+                  {user.email}
+                </Typography>
+              }
+            />
+            <div style={{ display: "flex", gap: "10px" }}>
               <Button
-                component={Link}
-                to={`/user/${user.id}`}
                 variant="contained"
                 color="primary"
-                style={{ marginTop: '10px' }}
+                style={{
+                  height: "36px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={() => handleUpdateClick(user)}
               >
-                View Details
+                Update
               </Button>
               <Button
                 variant="contained"
                 color="secondary"
-                style={{ marginTop: '10px', marginLeft: '10px' }}
-                onClick={() => handleDelete(user.id)}
+                style={{
+                  height: "36px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={() => handleDeleteClick(user.id)}
               >
-                Delete User
+                Delete
               </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+            </div>
+          </ListItem>
+        ))}
+      </List>
+    </Paper>
   );
 }
 
