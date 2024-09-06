@@ -1,4 +1,3 @@
-// UserListContainer.js
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import UserList from "./UserList";
@@ -36,28 +35,11 @@ function UserListContainer() {
     }
   }, [newUser]);
 
-  const deleteUser = async (id) => {
-    try {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/users/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to delete user");
-
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  return <UserList users={users} updateUser={updateUser} deleteUser={deleteUser} />;
+  return <UserList users={users} />;
 }
 
 export default UserListContainer;
